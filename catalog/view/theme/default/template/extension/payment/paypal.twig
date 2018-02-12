@@ -1,0 +1,36 @@
+<div class="row">
+	<div class="col-xs-12">
+		<p>
+    		<input type="hidden" name="custom" value="{{ custom }}" />   
+    		<input type="button" value="{{ button_confirm }}" id="button-confirm" class="button" />	
+    	</p>
+	</div>
+</div>
+
+<script type="text/javascript">
+$('#button-confirm').bind('click', function() {
+	$.ajax({
+		url: 'index.php?route=extension/payment/paypal/send',
+		type: 'post',
+		data: $('#payment :input'),
+		dataType: 'json',		
+		beforeSend: function() {
+			$('#button-confirm').attr('disabled', true);
+			$('#payment').before('<div class="attention"><img src="catalog/view/theme/default/image/loading.gif" alt="" /> {{ text_wait }}</div>');
+		},
+		complete: function() {
+			$('#button-confirm').attr('disabled', false);
+			$('.attention').remove();
+		},				
+		success: function(json) {
+			if (json['error']) {
+				alert(json['error']);
+			}
+			
+			if (json['success']) {
+				location = json['success'];
+			}
+		}
+	});
+});
+</script> 
